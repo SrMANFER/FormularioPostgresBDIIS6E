@@ -1,15 +1,41 @@
 package tiendadevideo;
+
+import static java.awt.Frame.MAXIMIZED_BOTH;
+import java.awt.HeadlessException;
+import java.text.SimpleDateFormat;
+import javax.swing.JOptionPane;
+import java.util.Calendar;
+import java.sql.*;
+import java.io.IOException;
+
 /**
  * @author salasistemas
  */
 public class Actor extends javax.swing.JFrame {
-    String EMPTY=new String();
+    Connection con=null;
+    Statement stmt=null;
+    ResultSet rs=null;
+    PreparedStatement psInsertar = null;   
+     int idActor,longitudBytes;
+    String sNombre,
+           sNacionalidad,
+           sFecha;
+    String EMPTY = new String();
+    SimpleDateFormat formatoFecha  = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat formatoFecha2 = new SimpleDateFormat("dd/mm/yyyy");
+    java.sql.Date sqlDate;
+    java.util.Date utlDate;
+    java.util.Date nuevaFecha = null; 
     /**
      * Creates new form Actor
      */
-    public Actor() {
-        
+    public Actor(Statement stmt,Connection con) {
+        this.stmt=stmt;
+        this.con=con;
+        //JFrame.setDefaultLookAndFeelDecorated(true);
         initComponents();
+        primerRegistro();
+       
     }
 
     /**
@@ -21,17 +47,26 @@ public class Actor extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jCalendar1 = new com.toedter.calendar.JCalendar();
         jLabel1 = new javax.swing.JLabel();
         txtCodigo = new javax.swing.JTextField();
         boton_resetear = new javax.swing.JButton();
         txtNombre = new javax.swing.JTextField();
         txtNacionalidad = new javax.swing.JTextField();
-        txtNacimiento = new javax.swing.JTextField();
         salir_boton = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        labelCódigo = new javax.swing.JLabel();
+        labelNombre = new javax.swing.JLabel();
+        labelNacionalidad = new javax.swing.JLabel();
+        labelNacimiento = new javax.swing.JLabel();
+        btnEliminar = new javax.swing.JButton();
+        btnActualizar1 = new javax.swing.JButton();
+        btnBuscar = new javax.swing.JButton();
+        btnSiguiente = new javax.swing.JButton();
+        btnAnterior = new javax.swing.JButton();
+        dtFechaIngreso = new com.toedter.calendar.JDateChooser();
+        btnGuardar = new javax.swing.JButton();
+        btnPrimero = new javax.swing.JButton();
+        btnUltimo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 153, 153));
@@ -42,25 +77,28 @@ public class Actor extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("MANTENIMIENTO DE ACTORES");
 
+        txtCodigo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtCodigo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCodigoActionPerformed(evt);
             }
         });
 
-        boton_resetear.setText("RESETEAR");
+        boton_resetear.setText("LIMPIAR");
         boton_resetear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 boton_resetearActionPerformed(evt);
             }
         });
 
+        txtNombre.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNombreActionPerformed(evt);
             }
         });
 
+        txtNacionalidad.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtNacionalidad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNacionalidadActionPerformed(evt);
@@ -74,13 +112,73 @@ public class Actor extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("NOMBRE");
+        labelCódigo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelCódigo.setText("CÓDIGO");
 
-        jLabel3.setText("CODIGO");
+        labelNombre.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelNombre.setText("NOMBRE");
 
-        jLabel4.setText("NACIONALIDAD");
+        labelNacionalidad.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelNacionalidad.setText("NACIONALIDAD");
 
-        jLabel5.setText("NACIMIENTO");
+        labelNacimiento.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelNacimiento.setText("FECHA NACIMIENTO");
+
+        btnEliminar.setText("ELIMINAR");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
+
+        btnActualizar1.setText("ACTUALIZAR");
+        btnActualizar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizar1ActionPerformed(evt);
+            }
+        });
+
+        btnBuscar.setText("BUSCAR");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+
+        btnSiguiente.setText("SIGUIENTE");
+        btnSiguiente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSiguienteActionPerformed(evt);
+            }
+        });
+
+        btnAnterior.setText("ANTERIOR");
+        btnAnterior.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAnteriorActionPerformed(evt);
+            }
+        });
+
+        btnGuardar.setText("AGREGAR");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
+
+        btnPrimero.setText("PRIMER REGISTRO");
+        btnPrimero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPrimeroActionPerformed(evt);
+            }
+        });
+
+        btnUltimo.setText("ÚLTIMO REGISTRO");
+        btnUltimo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUltimoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -89,35 +187,44 @@ public class Actor extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(220, 220, 220)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(223, 223, 223)
-                        .addComponent(jLabel3))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(210, 210, 210)
-                        .addComponent(jLabel4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(216, 216, 216)
-                        .addComponent(jLabel5))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtNacimiento, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNacionalidad, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNombre, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(127, 127, 127)
+                        .addGap(405, 405, 405)
                         .addComponent(boton_resetear)
-                        .addGap(81, 81, 81)
-                        .addComponent(salir_boton))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(dtFechaIngreso, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(jLabel1)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(labelNacionalidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtNacionalidad)
+                            .addComponent(txtNombre)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btnPrimero, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                                    .addComponent(btnGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnActualizar1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnEliminar)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(salir_boton))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnAnterior, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
+                                        .addGap(18, 19, Short.MAX_VALUE)
+                                        .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                                        .addGap(18, 19, Short.MAX_VALUE)
+                                        .addComponent(btnSiguiente, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
+                                        .addGap(18, 20, Short.MAX_VALUE)
+                                        .addComponent(btnUltimo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(txtCodigo)
+                            .addComponent(labelNacimiento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labelNombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(labelCódigo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -125,26 +232,45 @@ public class Actor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelCódigo, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
+                .addComponent(labelNombre)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
+                .addComponent(labelNacionalidad)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtNacionalidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel5)
+                .addComponent(labelNacimiento)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(dtFechaIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(boton_resetear)
-                    .addComponent(salir_boton))
-                .addContainerGap(32, Short.MAX_VALUE))
+                    .addComponent(salir_boton)
+                    .addComponent(btnEliminar)
+                    .addComponent(btnActualizar1)
+                    .addComponent(btnGuardar))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(btnPrimero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(btnAnterior, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSiguiente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnUltimo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(12, 12, 12))
         );
 
         pack();
@@ -155,10 +281,11 @@ public class Actor extends javax.swing.JFrame {
     }//GEN-LAST:event_txtCodigoActionPerformed
 
     private void boton_resetearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_resetearActionPerformed
+        primerRegistro();
         txtCodigo.setText(EMPTY);
         txtNombre.setText(EMPTY);
         txtNacionalidad.setText(EMPTY);
-        txtNacimiento.setText(EMPTY);
+        dtFechaIngreso.setDate(null);  
     }//GEN-LAST:event_boton_resetearActionPerformed
 
     private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
@@ -173,52 +300,222 @@ public class Actor extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_salir_botonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Actor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Actor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Actor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Actor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        if (JOptionPane.showConfirmDialog(null,"¿Está seguro que desea BORRAR este registro?")==JOptionPane.OK_OPTION) {
+          sFecha=dtFechaIngreso.getCalendar().get(Calendar.YEAR)+"-"+(dtFechaIngreso.getCalendar().get(Calendar.MONTH)+1)
+                 +"-"+dtFechaIngreso.getCalendar().get(Calendar.DAY_OF_MONTH);
+          try{
+               nuevaFecha = formatoFecha.parse(sFecha);
+               sqlDate = new java.sql.Date(nuevaFecha.getTime());
+               if (null == psInsertar) { 
+                 psInsertar = con.prepareStatement( "DELETE FROM actor WHERE ID_ACTOR=?");
+                 psInsertar.setInt(1,Integer.parseInt(txtCodigo.getText()));
+                 boolean execute = psInsertar.execute();
+                 psInsertar.close(); 
+                 JOptionPane.showMessageDialog(null,"Registro Eliminado correctamente.");
+               }
+          }catch(SQLException | NumberFormatException | HeadlessException ex ){
+              ex.printStackTrace();             
+           }
+          catch(Exception e){
+              System.out.println("\nError de Fecha "+e.getMessage()+"\n" );
+          }
+        }  
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Actor().setVisible(true);
-            }
-        });
+    private void btnActualizar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizar1ActionPerformed
+         sFecha=dtFechaIngreso.getCalendar().get(Calendar.YEAR)+"-"+(dtFechaIngreso.getCalendar().get(Calendar.MONTH)+1)
+               +"-"+dtFechaIngreso.getCalendar().get(Calendar.DAY_OF_MONTH);
+        try{
+          nuevaFecha = formatoFecha.parse(sFecha);
+          sqlDate = new java.sql.Date(nuevaFecha.getTime());
+          if (null == psInsertar) { 
+            psInsertar = con.prepareStatement( "UPDATE actor set nombre=?, nacionalidad=?, fecha_nac=? WHERE ID_ACTOR=?");
+            psInsertar.setString(1,txtNombre.getText());
+            psInsertar.setString(2,txtNacionalidad.getText());
+            psInsertar.setDate(3,sqlDate);
+            psInsertar.setInt(4,Integer.parseInt(txtCodigo.getText()));
+            boolean execute = psInsertar.execute();
+            psInsertar.close(); psInsertar=null;
+            JOptionPane.showMessageDialog(null,"Registro Modificado correctamente.");
+          } 
+        }catch(SQLException | NumberFormatException | HeadlessException ex ){
+           ex.printStackTrace();             
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null,"\nError de Fecha "+e.getMessage()+"\n");
+        }
+    }//GEN-LAST:event_btnActualizar1ActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+      
+        // Método para buscar por código (evento KeyReleased del txtCodigo)
+    String codigo = txtCodigo.getText().trim();
+    if (!codigo.isEmpty()) {
+        try {
+            int iCodActor = Integer.parseInt(codigo);
+            buscarActor("select * from actor where id_actor = " + iCodActor);
+        } catch (NumberFormatException ex) {
+            // Si no es un número válido, no hacer nada
+        }
     }
+
+
+// Método para buscar por nombre (evento KeyReleased del txtNombre)
+
+    String nombre = txtNombre.getText().trim();
+    if (!nombre.isEmpty()) {
+        buscarActor("select * from actor where nombre LIKE '%" + nombre + "%'");
+    }
+
+    }
+// Método auxiliar para realizar la búsqueda
+private void buscarActor(String sql) {
+    try {
+        rs = stmt.executeQuery(sql);
+        if (rs.next()) {
+            idActor = rs.getInt(1);
+            sNombre = rs.getString(2);
+            sNacionalidad = rs.getString(3);
+            utlDate = rs.getDate(5);
+            
+            txtCodigo.setText(String.valueOf(idActor));
+            txtNombre.setText(sNombre);
+            txtNacionalidad.setText(sNacionalidad);
+            dtFechaIngreso.setDate(utlDate);
+        } else {
+            // Opcional: limpiar campos si no encuentra resultados
+            limpiarCampos();
+        }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(null, "Error[=" + ex + "]");
+    }
+}
+
+// Método auxiliar para limpiar campos
+private void limpiarCampos() {
+        txtCodigo.setText(EMPTY);
+        txtNombre.setText(EMPTY);
+        txtNacionalidad.setText(EMPTY);
+        dtFechaIngreso.setDate(null);
+        JOptionPane.showMessageDialog(null,"No se encontraron registros.");
+
+        
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSiguienteActionPerformed
+        try {
+           rs.next();
+           if (rs.isAfterLast()){
+             rs.last();
+             JOptionPane.showMessageDialog(null,"Ya te encuentras en el Último registro");
+           }
+           display();
+        }catch (SQLException e){
+           JOptionPane.showMessageDialog(null,"Error craso--> "+e.getMessage());
+         }
+    }//GEN-LAST:event_btnSiguienteActionPerformed
+
+    private void btnAnteriorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnteriorActionPerformed
+        try {
+          rs.previous();
+          if (rs.isBeforeFirst()) {
+            rs.first();
+            JOptionPane.showMessageDialog(null,"Ya te encuentras en el primer registro");
+          }
+          display();
+       }catch (SQLException e){
+          JOptionPane.showMessageDialog(null,"Error craso--> "+e.getMessage());
+       }
+    }//GEN-LAST:event_btnAnteriorActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+         sFecha=dtFechaIngreso.getCalendar().get(Calendar.YEAR)+"-"+(dtFechaIngreso.getCalendar().get(Calendar.MONTH)+1)
+               +"-"+dtFechaIngreso.getCalendar().get(Calendar.DAY_OF_MONTH);
+        try{
+             nuevaFecha = formatoFecha.parse(sFecha);
+             sqlDate = new java.sql.Date(nuevaFecha.getTime());
+             if (null == psInsertar) { 
+                 psInsertar = con.prepareStatement("insert into actor(id_actor, nombre, nacionalidad,fecha_nac) values (?,?,?,?)");
+                 psInsertar.setInt(1,Integer.parseInt(txtCodigo.getText()));
+                 psInsertar.setString(2,txtNombre.getText());
+                 psInsertar.setString(3,txtNacionalidad.getText());
+                 psInsertar.setDate(4,sqlDate);
+                 boolean execute = psInsertar.execute();
+                 psInsertar.close(); psInsertar = null;
+                 
+                 //JOptionPane.showMessageDialog(null,"Registro guardado correctamente.");
+                 JOptionPane.showMessageDialog(null,"Registro Adicionado Satisfactoriamente","Finished,Completed,Done",JOptionPane.DEFAULT_OPTION);
+             } 
+        }catch(SQLException | NumberFormatException | HeadlessException ex ){
+           ex.printStackTrace();             
+        }
+         catch(Exception e){
+             System.out.println("\nError de Fecha "+e.getMessage()+"\n" );
+         }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnPrimeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrimeroActionPerformed
+        try {
+             rs.first();
+             display();
+       }catch (SQLException e){
+         JOptionPane.showMessageDialog(null,"Error craso--> "+e.getMessage());
+       }
+    }//GEN-LAST:event_btnPrimeroActionPerformed
+
+    private void btnUltimoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUltimoActionPerformed
+         try {
+              rs.last();
+              display();
+        }catch (SQLException e){
+             JOptionPane.showMessageDialog(null,"Error craso--> "+e.getMessage());
+         }
+    }//GEN-LAST:event_btnUltimoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton boton_resetear;
+    private javax.swing.JButton btnActualizar1;
+    private javax.swing.JButton btnAnterior;
+    private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnPrimero;
+    private javax.swing.JButton btnSiguiente;
+    private javax.swing.JButton btnUltimo;
+    private com.toedter.calendar.JDateChooser dtFechaIngreso;
+    private com.toedter.calendar.JCalendar jCalendar1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel labelCódigo;
+    private javax.swing.JLabel labelNacimiento;
+    private javax.swing.JLabel labelNacionalidad;
+    private javax.swing.JLabel labelNombre;
     private javax.swing.JButton salir_boton;
     private javax.swing.JTextField txtCodigo;
-    private javax.swing.JTextField txtNacimiento;
     private javax.swing.JTextField txtNacionalidad;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
+
+    public void  primerRegistro(){
+    try{
+          String qry="SELECT * FROM  actor order by id_actor";
+          rs = stmt.executeQuery(qry);
+          rs.first();
+          display();
+    } catch (SQLException e){
+       System.out.println (e.getMessage());
+      }
+ }
+    public void display() {
+  try {
+       txtCodigo.setText(String.valueOf(rs.getInt(1)));
+       txtNombre.setText(rs.getString(2));
+       txtNacionalidad.setText(rs.getString(3));
+       utlDate = rs.getDate(5);
+       dtFechaIngreso.setDate(utlDate);
+    }catch(Exception ex ){
+          System.out.println ("Error Display "+ ex.getMessage());
+     }
+ }
 }

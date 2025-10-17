@@ -11,6 +11,7 @@ package tiendadevideo;
 
 import java.sql.Connection;
 import java.sql.Statement;
+
 public class Menu extends javax.swing.JFrame {
      Connection con=null;
      Statement stmt=null; 
@@ -21,6 +22,8 @@ public class Menu extends javax.swing.JFrame {
         this.con=con;
         this.stmt=stmt;
         initComponents();
+        this.setExtendedState(Menu.MAXIMIZED_BOTH);
+        setTitle("Menu Administración de Videos");
     }
 
     /**
@@ -38,14 +41,14 @@ public class Menu extends javax.swing.JFrame {
         menuPelicula = new javax.swing.JMenuItem();
         menuUsuario = new javax.swing.JMenuItem();
         menuCategoria = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
         jMenu4 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jMenu1.setText("ARCHIVO");
+        jMenu1.setText("MANTENIMIENTO");
 
         menuActor.setText("Actor");
         menuActor.addActionListener(new java.awt.event.ActionListener() {
@@ -81,9 +84,6 @@ public class Menu extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("EDICIÓN");
-        jMenuBar1.add(jMenu2);
-
         jMenu3.setText("CONSULTAR");
         jMenuBar1.add(jMenu3);
 
@@ -93,24 +93,27 @@ public class Menu extends javax.swing.JFrame {
         jMenu5.setText("AYUDA");
         jMenuBar1.add(jMenu5);
 
+        jMenu2.setText("INICIO");
+        jMenuBar1.add(jMenu2);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 350, Short.MAX_VALUE)
+            .addGap(0, 399, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 308, Short.MAX_VALUE)
+            .addGap(0, 313, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void menuActorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuActorActionPerformed
-        Actor objAct = new Actor();
+        Actor objAct = new Actor(stmt, con);
         objAct.setVisible(true);
     }//GEN-LAST:event_menuActorActionPerformed
 
@@ -130,7 +133,15 @@ public class Menu extends javax.swing.JFrame {
         objCat.setVisible(true);;
     }//GEN-LAST:event_menuCategoriaActionPerformed
 
-   
+   public static void main(String args[]) {
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Login().setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
@@ -145,3 +156,4 @@ public class Menu extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuUsuario;
     // End of variables declaration//GEN-END:variables
 }
+

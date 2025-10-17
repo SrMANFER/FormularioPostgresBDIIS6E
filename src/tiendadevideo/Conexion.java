@@ -46,7 +46,8 @@ catch(Exception e){
                    System.out.println ("Error Creando el Statement= "+ e.getMessage());
             }
         }else{
-               System.out.println("Invalida usuario o contraseña");
+               System.out.println("usuario o contraseña incorrectas");
+               
          }
     }
 
