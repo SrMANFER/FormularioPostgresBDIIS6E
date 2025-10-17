@@ -133,15 +133,6 @@ public class Menu extends javax.swing.JFrame {
         objCat.setVisible(true);;
     }//GEN-LAST:event_menuCategoriaActionPerformed
 
-   public static void main(String args[]) {
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Login().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
